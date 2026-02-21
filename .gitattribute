@@ -1,0 +1,9 @@
+# Exclure la documentation du template de l'archive finale
+README.md export-ignore
+LICENSE export-ignore
+
+# Exclure les fichiers de configuration spécifiques au dépôt template
+.gitattributes export-ignore
+
+# S'assurer que les scripts restent en LF (Line Feed) pour éviter les bugs entre Windows/Linux
+*.sh text eol=lf
