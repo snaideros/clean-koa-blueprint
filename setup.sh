@@ -14,8 +14,9 @@ npx husky add .husky/pre-commit "node .github/scripts/validate-commit.js"
 npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "\\$1"'
 echo "✅ Hooks Git installés."
 
-# 4. Nettoyage du script de setup (optionnel)
-rm setup.sh
+# 4. Nettoyage du script de setup et du README si besoin (optionnel)
+rm -f setup.sh
+rm -f README.md
 
 echo "✨ Terminé ! Ton usine logicielle est prête."
 echo "👉 Prochaine étape : Modifie specs/purpose.md et appelle @architect."
