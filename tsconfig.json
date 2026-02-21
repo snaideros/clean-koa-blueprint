@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@resource/*": ["src/*"]
+    },
+    "rootDir": "."
+  },
+  "include": ["src/**/*.ts", ".github/reference-architecture/**/*.ts"]
+}

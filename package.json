@@ -1,0 +1,40 @@
+{
+  "name": "clean-koa-blueprint",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Template d'usine logicielle Clean Architecture avec Koa.js",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "test:watch": "node --import tsx --test --watch src/**/*.test.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "lint": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "clean-architecture",
+    "koa",
+    "typescript",
+    "tdd"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/router": "^13.1.0",
+    "koa": "^2.15.3",
+    "koa-bodyparser": "^4.4.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@types/koa": "^2.15.0",
+    "@types/koa__router": "^12.0.4",
+    "@types/koa-bodyparser": "^4.3.11",
+    "@types/node": "^22.0.0",
+    "husky": "^9.1.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
+}
