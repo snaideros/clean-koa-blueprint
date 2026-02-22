@@ -14,7 +14,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "lint": "tsc --noEmit",
-    "postinstall": "husky"
+    "postinstall": "husky",
+    "prepare": "husky"
   },
   "keywords": [
     "clean-architecture",

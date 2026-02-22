@@ -24,21 +24,38 @@ else
 fi
 
 # 3. Initialize new local Git repository
+echo "📁 Setting up Git repository..."
 git init
+echo "✅ Git repository initialized."
 
 # 4. Install dependencies
 # This will generate the lockfile with the correct project name
+echo "📦 Installing dependencies..."
 npm install
+echo "✅ Dependencies installed successfully."
 
 # 5. Configure Husky Hooks
 # Note: Husky directories are often excluded from git archives, so we recreate them here
-npx husky install
+echo "🔧 Configuring Git hooks with Husky..."
+npx husky
 
 # Pre-commit hook: Validate code and tests before committing
-npx husky add .husky/pre-commit "node .github/scripts/validate-commit.js"
+cat <<EOF > .husky/pre-commit
+#!/bin/sh
+. "\$(dirname "\$0")/_/husky.sh"
+
+node .github/scripts/validate-commit.js
+EOF
+chmod +x .husky/pre-commit
 
 # Commit-msg hook: Ensure Conventional Commits compliance
-npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'
+cat <<EOF > .husky/commit-msg
+#!/bin/sh
+. "\$(dirname "\$0")/_/husky.sh"
+
+npx --no -- commitlint --edit "\$1"
+EOF
+chmod +x .husky/commit-msg
 
 echo "✅ Git Hooks installed successfully."
 
