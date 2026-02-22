@@ -10,32 +10,33 @@ export type HttpRequest = {
 };
 
 /**
- * Higher-Order Function pour Koa
+ * Higher-Order Function to decouple Koa from controllers 
  */
 export const createHttpHandler = (controller: (req: HttpRequest) => Promise<Result<any>>) => {
   return async (ctx: Context) => {
-    // 1. Normalisation (Koa utilise ctx.request.body et ctx.params via koa-router)
+    // 1. Normalization: Map Koa context to a neutral HttpRequest object
     const httpRequest: HttpRequest = {
       body: ctx.request.body,
       query: ctx.query,
-      params: (ctx as any).params, // Dépend de ton router
+      params: (ctx as any).params,
       headers: ctx.headers,
-      user: ctx.state.user // Convention Koa pour les données d'auth
+      user: ctx.state.user
     };
 
-    // 2. Appel du contrôleur agnostique
+    // 2. Call the framework-agnostic controller
     const result = await controller(httpRequest);
 
-    // 3. Réponse
+    // 3. Response mapping: Map Result success/failure to HTTP status codes
     if (result.success) {
       ctx.status = 200;
       ctx.body = result.data;
     } else {
-      // Mapping des erreurs métier -> HTTP
-      ctx.status = result.error.code === 'NOT_FOUND' ? 404 : 400;
+      const { error } = result;
+      // Map business error codes to HTTP status
+      ctx.status = error.code === 'NOT_FOUND' ? 404 : 400;
       ctx.body = {
-        error: result.error.code,
-        message: result.error.message
+        error: error.code,
+        message: error.message
       };
     }
   };

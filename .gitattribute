@@ -1,9 +1,17 @@
-# Exclure la documentation du template de l'archive finale
+# .gitattributes - Configuration for git archive and line endings
+
+# 1. Exclude template documentation and legal files from the final archive
 README.md export-ignore
 LICENSE export-ignore
 
-# Exclure les fichiers de configuration spécifiques au dépôt template
+# 2. Exclude template-specific configuration
 .gitattributes export-ignore
 
-# S'assurer que les scripts restent en LF (Line Feed) pour éviter les bugs entre Windows/Linux
+# #. Ensure scripts use LF (Line Feed) to prevent cross-platform bugs (Windows/Linux)
 *.sh text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+
+# $. Treat specific files as binary
+*.png binary
+*.jpg binary

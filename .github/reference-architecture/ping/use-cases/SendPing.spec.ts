@@ -3,11 +3,11 @@ import assert from 'node:assert';
 import { SendPing } from './SendPing.js';
 import { InMemoryPingRepository } from '../adapters/persistence/InMemoryPingRepository.js';
 
-test('SendPing Use Case', async (t) => {
+test('Use Case: SendPing', async (t) => {
   const pingRepository = new InMemoryPingRepository();
   const sendPing = SendPing({ pingRepository });
 
-  await t.test('doit créer un ping avec succès quand le texte est valide', async () => {
+  await t.test('should successfully create a ping when text is valid', async () => {
     const result = await sendPing({ text: 'Hello' });
 
     assert.strictEqual(result.success, true);
@@ -16,7 +16,7 @@ test('SendPing Use Case', async (t) => {
     }
   });
 
-  await t.test('doit échouer si le texte est vide', async () => {
+  await t.test('should fail if the text is empty', async () => {
     const result = await sendPing({ text: '' });
 
     assert.strictEqual(result.success, false);

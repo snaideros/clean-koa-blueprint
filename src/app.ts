@@ -1,20 +1,21 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router';
-import { loadResources } from './shared/io/loadResources.js';
+import { loadResources } from '@shared/io/loadResources.js';
 
 const app = new Koa();
-const rootRouter = new Router();
+// Initialize root router with /api prefix for better API versioning/routing
+const rootRouter = new Router({ prefix: '/api' });
 
 /**
- * 1. Middlewares de base
+ * 1. Base Middlewares
  */
 app.use(bodyParser());
 
 /**
- * 2. Gestionnaire d'erreurs global (Sécurité ultime)
- * Si un Result pattern n'a pas été respecté et qu'une erreur "throw",
- * on évite le crash du serveur et on renvoie un format propre.
+ * 2. Global Error Handler (Safety Net)
+ * Even if the Result pattern is bypassed by a 'throw', 
+ * this prevents server crashes and returns a clean error format.
  */
 app.use(async (ctx, next) => {
   try {
@@ -23,13 +24,14 @@ app.use(async (ctx, next) => {
     ctx.status = err.status || 500;
     ctx.body = {
       error: 'INTERNAL_SERVER_ERROR',
-      message: err.message || 'Une erreur imprévue est survenue.'
+      message: err.message || 'An unexpected error occurred.'
     };
   }
 });
 
 /**
- * 3. Assemblage des ressources (Vertical Slices)
+ * 3. Resource Assembly (Vertical Slices)
+ * Uses top-level await to ensure all resources are loaded before starting
  */
 await loadResources(rootRouter);
 
@@ -37,11 +39,11 @@ app.use(rootRouter.routes());
 app.use(rootRouter.allowedMethods());
 
 /**
- * 4. Lancement du serveur
+ * 4. Server Initialization
  */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+  console.log(`🚀 Server active on http://localhost:${PORT}`);
 });
 
 export default app;

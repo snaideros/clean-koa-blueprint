@@ -1,0 +1,46 @@
+# --- System Files ---
+.DS_Store
+Thumbs.db
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# --- TypeScript & Build ---
+dist/
+*.tsbuildinfo
+
+# --- Environment Variables ---
+# Only commit .env.example to define the structure
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# --- Testing ---
+coverage/
+.nyc_output
+
+# --- Husky ---
+# Ignore the generated internal scripts, but keep the hooks
+.husky/_
+
+# --- IDEs ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*

@@ -2,13 +2,14 @@ import { SendPing } from './SendPing.js';
 import { InMemoryPingRepository } from '../adapters/persistence/InMemoryPingRepository.js';
 
 /**
- * Initialisation des dépendances (Infrastructure)
- * Dans un vrai projet, on injecterait ici le repository PostgreSQL ou MongoDB.
+ * Infrastructure Initialization
+ * In production, replace InMemory with PostgreSQL, MongoDB, etc.
  */
 const pingRepository = new InMemoryPingRepository();
 
 /**
- * Export des instances de Use Cases (Injectées)
+ * Use Case Instances Export (Injected)
+ * Ensures loose coupling between layers
  */
 export const sendPing = SendPing({ 
   pingRepository 

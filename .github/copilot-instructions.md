@@ -1,67 +1,68 @@
-# Directives Globales du Projet (2026)
+# Global Project Directives (2026)
 
-## 📚 Références et Standards
-- **Exemple de référence** : Pour toute structure de fichier, style de code ou pattern d'injection, réfère-toi EXCLUSIVEMENT à l'exemple dans `.github/reference-architecture/`.
-- **Vérité métier** : La source de vérité pour la fonctionnalité en cours est `.github/purpose.md`.
+## 🎯 1. Context & Source of Truth
+- **Source of Truth**: The absolute reference for the current feature is `.github/purpose.md`. Read it before any action.
+- **Reference Architecture**: Follow the patterns, file structures, and injection styles defined in `.github/reference-architecture/`.
+- **Multi-Agent Flow**: 
+    - Respect your specific role (Architect, Developer, Tester, Reviewer, Refactor).
+    - Never modify files outside your scope.
+    - If an error is found in a previous phase, stop and request a correction from the responsible agent.
 
-## Stack Technique
-- **Backend**: Node.js 24+ (ESM uniquement), Native Test Runner (`node:test`, `node:assert`).
+## 🏗 2. Architecture & Tech Stack
+- **Backend**: Node.js 24+ (Strict ESM), Native Test Runner (`node:test`, `node:assert`).
 - **Frontend**: Vue.js 3 (Composition API), Vuetify 3, Vitest, Pinia.
-- **Architecture**: Clean Architecture stricte.
+- **Patterns**: Strict Clean Architecture (Vertical Slicing).
+- **ESM Requirement**: All imports MUST include the `.js` extension, even when referencing `.ts` files (e.g., `import { Service } from './Service.js';`).
+- **Async**: Top-Level Await is authorized and preferred for initialization.
 
-## Règles de Développement
-1. **Zéro Dépendance Circulaire**: Les couches internes ne connaissent jamais les couches externes.
-2. **Injection de Dépendances**: Aucune instanciation de service/repository à l'intérieur d'une classe. Tout passe par le constructeur.
-3. **Types**: TypeScript strict. Utilisation de `zod` pour la validation aux frontières (API/Entités).
-4. **Style**: Pas de commentaires évidents. Le code doit être auto-descriptif (Clean Code).
+## 🛠 3. Development Rules
+1. **Dependency Injection**: No service/repo instantiation inside classes/functions. Inject everything via constructor or factory parameters.
+2. **Circular Dependencies**: Zero tolerance. Inner layers (Domain) must never know about outer layers (Adapters).
+3. **Types**: Strict TypeScript. Use `zod` for all boundary validations (API inputs, Entity creation).
+4. **Signature Standard**: 
+    - **Named Parameters**: Functions with >1 argument MUST use an options object.
+    - **Destructuring**: Use destructuring directly in the function signature.
+5. **Encapsulation**: Every sub-folder (`entities`, `use-cases`, `adapters`) MUST have an `index.ts`. External imports must only use these indices.
 
-## Règles de Signature de Fonction
-- **Named Parameters** : Toutes les fonctions acceptant plus de 1 argument DOIVENT utiliser un objet nommé (Options Object).
-  * Exemple : `async createUser({ email, password, role }: CreateUserDTO)`
-- **Destructuring** : Préfère le destructuring directement dans la signature pour la clarté.
+## 📡 4. HTTP & I/O Decoupling
+- **Principle**: Controllers in `adapters/http-controllers/` must be framework-agnostic (no Koa/Express imports).
+- **Mechanism**: Use the `createHttpHandler` shared helper.
+- **Signature**: `async (req: HttpRequest): Promise<Result<T>>`.
+- **Logic**: The controller maps the normalized `HttpRequest` to a Use Case and returns a `Result`.
 
-## 🧱 Découplage HTTP
-- **Principe** : Aucun contrôleur dans `adapters/http-controllers/` ne doit importer `express` ou `koa`.
-- **Méthode** : Utilise le helper `createHttpHandler`. 
-- **Signature** : Un contrôleur doit toujours être `async (req: HttpRequest): Promise<Result<T>>`.
-- **Bénéfice** : Cela permet de tester les contrôleurs avec des objets JS simples, sans simuler de serveurs complexes.
+## ⚠️ 5. Error Handling (Result Pattern)
+- **Zero Throws**: Never use `throw` for business logic errors (e.g., "User not found").
+- **System Errors**: Only use `throw` for unexpected system failures (DB down, critical bugs).
+- **Implementation**: Domain/Application layers must return a `Result<T, E>` type.
+- **Structure**: 
+    - Success: `{ success: true, data: T }`
+    - Failure: `{ success: false, error: { code: string, message: string } }`
 
-## Gestion des Erreurs (Pattern Result)
-- **Principe** : Ne jamais utiliser `throw` pour des erreurs métier (ex: "Utilisateur non trouvé", "Mot de passe invalide"). Utiliser uniquement `throw` pour des erreurs système imprévues (DB déconnectée, bug critique).
-- **Implémentation** : Toutes les fonctions de la couche `Application` (Use Cases) et `Domain` doivent retourner un type `Result<T, E>`.
-- **Structure du retour** : 
-  * Succès : `{ success: true, data: ... }`
-  * Échec : `{ success: false, error: ... }`
-- **Typage des erreurs** : Préfère des objets d'erreur typés (ex: `{ code: 'USER_EXISTS', message: '...' }`) plutôt que des chaînes de caractères simples.
+## 🧪 6. Quality & TDD Workflow
+- **TDD First**: No production code before tests, except for interface/contract definitions by the Architect.
+- **Git Hooks**: Husky + Commitlint are active.
+- **Validation**: Never propose a commit that fails `npm test` (except during the "RED phase" of TDD).
+- **Commit Validation Script**: Refer to `.github/scripts/validate-commit.js`.
 
-## Règles Git (Conventional Commits)
-- **Langue** : Les messages de commit doivent être en anglais.
-- **Structure** : `<type>(<scope>)[!]: <description>`
-- **Types** :
-  - `feat`: Nouvelle fonctionnalité (ex: un nouveau Use Case).
-  - `fix`: Correction d'un bug.
-  - `test`: Ajout ou modification de tests (Node native runner).
-  - `refactor`: Modification de code qui ne change pas le comportement (rôle de @refactor).
-  - `style`: Changement lié à Vuetify/CSS.
-  - `docs`: Documentation dans `.github/docs/` ou JSDoc.
-- **Description** : Doit être concise (50 caractères si possible, 80 max) et claire (ex: "feat(user): add createUser use case").
-- **Breaking Change** : Ajouter `!` après le type si le commit introduit une rupture de contrat (ex: changement d'interface, suppression d'une API).
-- **Scope** : Doit correspondre au dossier de la ressource (ex: `user`, `product`, `ui`).
-- **Corps** : Explique brièvement le "Pourquoi" et non le "Comment" si le changement est complexe.
+## 📝 7. Git & Commits (Conventional Commits)
+When proposing a commit message, strictly follow this structure:
+- **Language**: English only.
+- **Header**: A single line (max 50 chars) summarizing the overall intent. Format: `<type>(<scope>)[!]: <description>`
+- **Blank Line**: Mandatory.
+- **Allowed Types**: 
+    - `feat`: New feature/Use Case.
+    - `fix`: Bug fix.
+    - `test`: Tests (Node native).
+    - `refactor`: Code change that neither fixes a bug nor adds a feature.
+    - `style`: UI/Vuetify changes.
+    - `docs`: Documentation updates.
+- **Scope**: Folder name of the resource (e.g., `user`, `auth`).
+- **Body**: Use bullet points for specific file changes or technical details.
 
-## 🛠 Setup & Qualité (Git Hooks)
-- **Outils** : Husky + Commitlint + Script de validation personnalisé.
-- **Maintenance** : Si tu ajoutes une dépendance, vérifie que le script `scripts/validate-commit.js` ne doit pas être mis à jour.
-- **Consigne** : Ne propose jamais de commit qui ne passerait pas la validation de `npm test` (sauf mention "RED phase").
-- **Installation** : En cas de nouveau setup, lance `npx husky install` et configure `.husky/pre-commit` pour appeler le script de validation.
+**Example of expected output:**
+feat(api): overhaul core architecture and error handling
 
-## Règle de Cohérence Multi-Agents
-- Un agent ne doit jamais modifier un fichier qui n'est pas dans son périmètre (ex: @tester ne modifie pas le code source, @developer ne modifie pas les interfaces).
-- Si un agent détecte une erreur dans la phase précédente (ex: @tester voit une erreur de logique dans l'interface de l'architecte), il doit demander une correction à l'agent concerné avant de continuer.
-
-## Règle des Exports
-Chaque sous-dossier (entities, use-cases, adapters) DOIT posséder un fichier index.ts.
-Les fichiers externes à la ressource ne doivent importer que via ces index pour respecter l'encapsulation.
-
-## Workflow TDD
-Interdiction d'écrire du code de production avant le test, sauf pour définir les interfaces (rôle de l'Architecte).
+* Implement API versioning in app.ts
+* Decouple Koa from controllers in createHttpHandler
+* Add dynamic resource loading in loadResources
+* Update node engine requirements in package.json
