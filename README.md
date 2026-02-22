@@ -11,6 +11,6 @@ Run the following commands to create a new project from this template. It will a
 # Define your project name and run the initialization
 PROJECT_NAME="your-project-name"
 mkdir "$PROJECT_NAME" && cd "$PROJECT_NAME"
-curl -L https://github.com/snaideros/clean-koa-template/tarball/main | tar -xz --strip-components=1
+curl -L https://github.com/snaideros/clean-koa-blueprint/tarball/main | tar -xz --strip-components=1
 bash ./setup.sh
 ```
